@@ -1,7 +1,8 @@
 import React, { useState, useCallback, useEffect } from 'react';
+import axios from 'axios';
 
 function Form() {
-  const [dataForm, setDataForm] = useState({});
+  const [dataForm, setDataForm] = useState({ name: "", age: 0 });
   const [feedbackForm, setFeedbackForm] = useState("");
 
   const handleChangeInputValue = useCallback((e, inputKey) => {
@@ -9,17 +10,21 @@ function Form() {
     setDataForm({ ...dataForm, [inputKey]: value });
   }, [dataForm]);
 
-  const handleSubmit = useCallback((e) => {
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
-
-    const { name, age } = dataForm;
-    setFeedbackForm(`A idade de ${name} é ${age >= 18 ? "maior" : "menor"} que 18 anos.`);
     
-    console.log('teste');
+    await axios.post('http://localhost:8081/data_form', dataForm)
+      .then(res => console.log('[RES]', res))
+      .catch(err => console.log('[ERR]', err));
+    
+    setDataForm({ name: "", age: 0 });
+    setFeedbackForm("");
   }, [dataForm]);
 
   useEffect(() => {
-    console.log('aaa', dataForm);
+    const { name, age } = dataForm;
+    if(age !== 0) setFeedbackForm(`A idade de ${name} é ${age >= 18 ? "maior" : "menor"} que 18 anos.`);
+    if(Number.isNaN(age)) setFeedbackForm('');
   }, [dataForm]);
 
   return (
@@ -35,7 +40,7 @@ function Form() {
             Idade <input type="number" name="age" value={dataForm?.age} onChange={(e) => handleChangeInputValue(e, "age")} />
           </label>
           <br/><br/>
-        <button disabled={!(dataForm?.name && dataForm?.name !== "" && dataForm?.age && dataForm?.age !== 0)} type="submit">Enviar</button>
+        <button disabled={!(dataForm?.name !== "" && dataForm?.age !== 0)} type="submit">Enviar</button>
       </form>
     </>
   );
