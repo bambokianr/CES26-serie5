@@ -11,3 +11,5 @@ Utilizando React, Node e o módulo Express, desenvolva uma aplicação com os se
 
 ### :computer: Execução
 
+![til](./gifs/exec_serie5.gif)
+_Execução - todos os items da proposta_
