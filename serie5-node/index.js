@@ -10,11 +10,13 @@ app.use(bodyParser.json());
 const fileName = './data.json';
 
 app.get('/data_form', (req, res) => {
+  
   if(fs.existsSync(fileName)) {
     const bufferDataFile = fs.readFileSync(fileName);
+    console.log('--- Dados do arquivo data.json enviados.');
     res.send(bufferDataFile);
   } else {
-    res.sendStatus(404);
+    console.log('--- Arquivo data.json não existe!');
   }
 });
 

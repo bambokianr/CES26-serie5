@@ -3,6 +3,7 @@ import axios from 'axios';
 
 function Form() {
   const [dataForm, setDataForm] = useState({ name: "", age: 0 });
+  const [dataTable, setDataTable] = useState([]);
   const [feedbackForm, setFeedbackForm] = useState("");
 
   const handleChangeInputValue = useCallback((e, inputKey) => {
@@ -20,6 +21,20 @@ function Form() {
     setDataForm({ name: "", age: 0 });
     setFeedbackForm("");
   }, [dataForm]);
+
+  const handleAjaxButton = useCallback(() => {
+    const xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState === 4 && this.status === 200) {
+        const resArray = this.responseText.split('\n');
+        const resToState = [];
+        resArray.map(json => resToState.push(JSON.parse(json)));
+        setDataTable(resToState);
+      }
+    };
+    xhttp.open("GET", "http://localhost:8081/data_form", true);
+    xhttp.send();
+  }, []);
 
   useEffect(() => {
     const { name, age } = dataForm;
@@ -42,6 +57,29 @@ function Form() {
           <br/><br/>
         <button disabled={!(dataForm?.name !== "" && dataForm?.age !== 0)} type="submit">Enviar</button>
       </form>
+      <br/><br/><br/>
+      <button id="btn" type="button" onClick={handleAjaxButton}>Mostrar tabela</button>
+      <br/><br/>
+      {dataTable.length !== 0 && 
+        <table>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Idade</th>
+            </tr>
+          </thead>
+          <tbody>
+            {dataTable.map(row => {
+              return (
+                <tr key={row.name}>
+                  <td>{row.name}</td>
+                  <td>{row.age}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      }
     </>
   );
 }
